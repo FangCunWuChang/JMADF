@@ -1,5 +1,5 @@
 # JMADF
-Juce modular application development framework.
+Juce modular application development framework.   
 Juce模块化应用开发框架。
 
 ### 注意事项

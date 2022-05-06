@@ -8,6 +8,8 @@ class ModulePool final
 public:
 	ModulePool();
 	~ModulePool();
+
+	void closeAll();
 	
 private:
 	

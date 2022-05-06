@@ -1,3 +1,35 @@
 #pragma once
+#include <JuceHeader.h>
+#include "ModuleList.h"
+#include "ModulePool.h"
 
 //Juce模块化应用开发框架
+
+class JMADF final
+{
+	static std::unique_ptr<JMADF> _jmadf;
+public:
+	JMADF();
+	~JMADF() = default;
+	
+public:
+	static void init(const juce::String& moduleDir, const juce::String& product);
+	static void destroy();
+
+	static void refreshModule();
+	
+	static bool load(const juce::String& moduleId);
+	static void unload(const juce::String& moduleId);
+
+	static bool isLoaded(const juce::String& moduleId);
+	static bool isExists(const juce::String& moduleId);
+	
+private:
+	std::unique_ptr<ModuleList> _moduleList;
+	std::unique_ptr<ModulePool> _modulePool;
+
+	juce::String moduleDir;
+	juce::String product;
+private:
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JMADF)
+};

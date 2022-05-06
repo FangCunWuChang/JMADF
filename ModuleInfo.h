@@ -6,6 +6,9 @@
 class ModuleInfo final
 {
 public:
+	ModuleInfo() = default;
+	~ModuleInfo() = default;
+	
 	juce::String id;//"developer.moduleName"
 	juce::String version;//"x.x.x"
 	juce::String group;//"productName.groupName"

@@ -10,7 +10,11 @@ public:
 	ModuleList();
 	~ModuleList();
 
-	void refresh(const juce::String& moduleDir, const juce::String& productId);
+	void refresh(const juce::String& moduleDir, const juce::String& product);
+	void clear();
+	bool exists(const juce::String& moduleId);
+	const ModuleInfo* find(const juce::String& moduleId);
+	const juce::StringArray getList();
 	
 private:
 	juce::HashMap<juce::String, ModuleInfo> moduleList;

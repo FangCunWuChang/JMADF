@@ -9,3 +9,8 @@ ModulePool::~ModulePool()
 {
 	
 }
+
+void ModulePool::closeAll()
+{
+	
+}

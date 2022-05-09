@@ -18,6 +18,7 @@ public:
 	
 private:
 	juce::HashMap<juce::String, ModuleInfo> moduleList;
+	juce::ReadWriteLock listLock;
 	
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ModuleList)
 };

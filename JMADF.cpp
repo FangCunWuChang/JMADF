@@ -33,17 +33,21 @@ void JMADF::refreshModule()
 
 bool JMADF::load(const juce::String& moduleId)
 {
-	
+	const ModuleInfo* info = JMADF::_jmadf->_moduleList->find(moduleId);
+	if (!info) {
+		return false;
+	}
+	return JMADF::_jmadf->_modulePool->load(info);
 }
 
 void JMADF::unload(const juce::String& moduleId)
 {
-	
+	JMADF::_jmadf->_modulePool->unload(moduleId);
 }
 
 bool JMADF::isLoaded(const juce::String& moduleId)
 {
-	
+	return JMADF::_jmadf->_modulePool->isLoaded(moduleId);
 }
 
 bool JMADF::isExists(const juce::String& moduleId)

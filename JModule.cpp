@@ -1,10 +1,11 @@
 #include "JModule.h"
 
-JModule::JModule()
+bool JModule::init(const ModuleInfo* info)
 {
+	return true;
 }
 
-JModule::~JModule()
+void JModule::destory()
 {
 	
 }

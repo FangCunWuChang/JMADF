@@ -34,6 +34,7 @@ bool ModulePool::load(const ModuleInfo* info)
 		this->moduleList.set(info->id, mod);
 	}
 	else {
+		mod->destory();
 		delete mod;
 	}
 	

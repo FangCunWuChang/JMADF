@@ -1,6 +1,6 @@
 #include "JModule.h"
 
-bool JModule::init(const ModuleInfo* info)
+bool JModule::init(const ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
 {
 	if (!info) {
 		return false;
@@ -13,15 +13,20 @@ bool JModule::init(const ModuleInfo* info)
 	}
 	
 	this->createInstanceFunc
-		= reinterpret_cast<JModuleBase * (*)(void)>(this->library->getFunction("JModuleCreateInstance"));
+		= reinterpret_cast<jmadf::JModuleBase * (*)(void)>(
+			this->library->getFunction("JModuleCreateInstance")
+			);
 	this->destoryInstanceFunc
-		= reinterpret_cast<void(*)(JModuleBase*)>(this->library->getFunction("JModuleDestroyInstance"));
+		= reinterpret_cast<void(*)(const jmadf::JModuleBase*)>(
+			this->library->getFunction("JModuleDestroyInstance")
+			);
 
 	if (!this->createInstanceFunc || !this->destoryInstanceFunc) {
 		return false;
 	}
 	
 	this->moduleClass.reset(this->createInstanceFunc());
+	this->moduleClass->initLoader(staticInterface);
 	
 	if (!this->moduleClass) {
 		return false;
@@ -41,6 +46,7 @@ void JModule::destory()
 {
 	if (this->moduleClass) {
 		this->moduleClass->destory();
+		this->moduleClass->destoryLoader();
 	}
 	if (this->destoryInstanceFunc) {
 		this->destoryInstanceFunc(this->moduleClass.release());

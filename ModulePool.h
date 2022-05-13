@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 #include "JModule.h"
 #include "ModuleInfo.h"
+#include "libJModule/StaticInterface.h"
 
 //模块池，用于储存各加载后的模块
 
@@ -11,7 +12,7 @@ public:
 	ModulePool();
 	~ModulePool();
 
-	bool load(const ModuleInfo* info);
+	bool load(const ModuleInfo* info, const jmadf::StaticInterface* staticInterface);
 	void unload(const juce::String& moduleId);
 	bool isLoaded(const juce::String& moduleId);
 	void closeAll();

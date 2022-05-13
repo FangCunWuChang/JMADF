@@ -10,7 +10,7 @@ ModulePool::~ModulePool()
 	this->closeAll();
 }
 
-bool ModulePool::load(const ModuleInfo* info)
+bool ModulePool::load(const ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
 {
 	if (!info) {
 		return false;
@@ -28,7 +28,7 @@ bool ModulePool::load(const ModuleInfo* info)
 		return false;
 	}
 	
-	bool result = mod->init(info);
+	bool result = mod->init(info, staticInterface);
 	
 	if (result) {
 		this->moduleList.set(info->id, mod);

@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 #include "ModuleList.h"
 #include "ModulePool.h"
+#include "libJModule/StaticInterface.h"
 
 //Juce模块化应用开发框架
 
@@ -27,6 +28,7 @@ public:
 private:
 	std::unique_ptr<ModuleList> _moduleList;
 	std::unique_ptr<ModulePool> _modulePool;
+	std::unique_ptr<jmadf::StaticInterface> _staticInterface;
 
 	juce::String moduleDir;
 	juce::String product;

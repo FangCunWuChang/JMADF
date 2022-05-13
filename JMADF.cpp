@@ -6,6 +6,7 @@ JMADF::JMADF()
 {
 	this->_moduleList = std::make_unique<ModuleList>();
 	this->_modulePool = std::make_unique<ModulePool>();
+	this->_staticInterface = std::make_unique<jmadf::StaticInterface>();
 }
 
 void JMADF::init(const juce::String& moduleDir, const juce::String& product)
@@ -16,6 +17,10 @@ void JMADF::init(const juce::String& moduleDir, const juce::String& product)
 	JMADF::_jmadf = std::make_unique<JMADF>();
 	JMADF::_jmadf->moduleDir = moduleDir;
 	JMADF::_jmadf->product = product;
+	JMADF::_jmadf->_staticInterface->loadFunc = &JMADF::load;
+	JMADF::_jmadf->_staticInterface->unloadFunc = &JMADF::unload;
+	JMADF::_jmadf->_staticInterface->isExistsFunc = &JMADF::isExists;
+	JMADF::_jmadf->_staticInterface->isLoadedFunc = &JMADF::isLoaded;
 	JMADF::refreshModule();
 }
 
@@ -37,7 +42,7 @@ bool JMADF::load(const juce::String& moduleId)
 	if (!info) {
 		return false;
 	}
-	return JMADF::_jmadf->_modulePool->load(info);
+	return JMADF::_jmadf->_modulePool->load(info, JMADF::_jmadf->_staticInterface.get());
 }
 
 void JMADF::unload(const juce::String& moduleId)

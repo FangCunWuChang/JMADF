@@ -10,7 +10,7 @@ ModulePool::~ModulePool()
 	this->closeAll();
 }
 
-bool ModulePool::load(const ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
+bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
 {
 	if (!info) {
 		return false;

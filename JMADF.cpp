@@ -38,7 +38,7 @@ void JMADF::refreshModule()
 
 bool JMADF::load(const juce::String& moduleId)
 {
-	const ModuleInfo* info = JMADF::_jmadf->_moduleList->find(moduleId);
+	const jmadf::ModuleInfo* info = JMADF::_jmadf->_moduleList->find(moduleId);
 	if (!info) {
 		return false;
 	}

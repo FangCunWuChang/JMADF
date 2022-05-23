@@ -45,7 +45,7 @@ void ModuleList::refresh(const juce::String& moduleDir, const juce::String& prod
 					continue;
 				}
 				
-				ModuleInfo& moduleInfo = this->moduleList.getReference(moduleName);
+				jmadf::ModuleInfo& moduleInfo = this->moduleList.getReference(moduleName);
 				moduleInfo.id = id;
 				moduleInfo.version = version;
 				moduleInfo.group = group;
@@ -76,9 +76,9 @@ void ModuleList::clear()
 	this->listLock.exitWrite();
 }
 
-const ModuleInfo* ModuleList::find(const juce::String& moduleId)
+const jmadf::ModuleInfo* ModuleList::find(const juce::String& moduleId)
 {
-	const ModuleInfo* ptr = nullptr;
+	const jmadf::ModuleInfo* ptr = nullptr;
 	this->listLock.enterRead();
 	if (this->moduleList.contains(moduleId)) {
 		ptr = &this->moduleList.getReference(moduleId);

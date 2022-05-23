@@ -1,6 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
-#include "ModuleInfo.h"
+#include "libJModule/ModuleInfo.h"
 #include "libJModule/JModuleBase.h"
 #include "libJModule/StaticInterface.h"
 
@@ -12,7 +12,7 @@ public:
 	JModule() = default;
 	~JModule() = default;
 	
-	bool init(const ModuleInfo* info, const jmadf::StaticInterface* staticInterface);
+	bool init(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface);
 	void destory();
 
 private:
@@ -21,7 +21,7 @@ private:
 	
 	std::function<jmadf::JModuleBase* (void)> createInstanceFunc;
 	std::function<void(const jmadf::JModuleBase*)> destoryInstanceFunc;
-	const ModuleInfo* info = nullptr;
+	const jmadf::ModuleInfo* info = nullptr;
 	
 	JUCE_LEAK_DETECTOR(JModule)
 };

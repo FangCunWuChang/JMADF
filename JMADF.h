@@ -25,10 +25,16 @@ public:
 	static bool isLoaded(const juce::String& moduleId);
 	static bool isExists(const juce::String& moduleId);
 	
+	static void raiseException(const juce::String& exception);
+	static const juce::String getException();
+	static void clearException();
+	
 private:
 	std::unique_ptr<ModuleList> _moduleList;
 	std::unique_ptr<ModulePool> _modulePool;
 	std::unique_ptr<jmadf::StaticInterface> _staticInterface;
+	juce::StringArray _exceptions;
+	juce::ReadWriteLock _exceptionLock;
 
 	juce::String moduleDir;
 	juce::String product;

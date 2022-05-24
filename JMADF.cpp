@@ -21,6 +21,9 @@ void JMADF::init(const juce::String& moduleDir, const juce::String& product)
 	JMADF::_jmadf->_staticInterface->unloadFunc = &JMADF::unload;
 	JMADF::_jmadf->_staticInterface->isExistsFunc = &JMADF::isExists;
 	JMADF::_jmadf->_staticInterface->isLoadedFunc = &JMADF::isLoaded;
+	JMADF::_jmadf->_staticInterface->raiseExceptionFunc = &JMADF::raiseException;
+	JMADF::_jmadf->_staticInterface->getExceptionFunc = &JMADF::getException;
+	JMADF::_jmadf->_staticInterface->clearExceptionFunc = &JMADF::clearException;
 	JMADF::refreshModule();
 }
 
@@ -38,8 +41,14 @@ void JMADF::refreshModule()
 
 bool JMADF::load(const juce::String& moduleId)
 {
+	if (moduleId.isEmpty())
+	{
+		JMADF::raiseException("Module id can't be empty!");
+		return false;
+	}
 	const jmadf::ModuleInfo* info = JMADF::_jmadf->_moduleList->find(moduleId);
 	if (!info) {
+		JMADF::raiseException("Module " + moduleId + " isn't exists!");
 		return false;
 	}
 	return JMADF::_jmadf->_modulePool->load(info, JMADF::_jmadf->_staticInterface.get());
@@ -47,15 +56,49 @@ bool JMADF::load(const juce::String& moduleId)
 
 void JMADF::unload(const juce::String& moduleId)
 {
+	if (moduleId.isEmpty())
+	{
+		return;
+	}
 	JMADF::_jmadf->_modulePool->unload(moduleId);
 }
 
 bool JMADF::isLoaded(const juce::String& moduleId)
 {
+	if (moduleId.isEmpty())
+	{
+		return false;
+	}
 	return JMADF::_jmadf->_modulePool->isLoaded(moduleId);
 }
 
 bool JMADF::isExists(const juce::String& moduleId)
 {
+	if (moduleId.isEmpty())
+	{
+		return false;
+	}
 	return JMADF::_jmadf->_moduleList->find(moduleId);
+}
+
+void JMADF::raiseException(const juce::String& exception)
+{
+	JMADF::_jmadf->_exceptionLock.enterWrite();
+	JMADF::_jmadf->_exceptions.add(exception);
+	JMADF::_jmadf->_exceptionLock.exitWrite();
+}
+
+const juce::String JMADF::getException()
+{
+	JMADF::_jmadf->_exceptionLock.enterRead();
+	const juce::String& str = JMADF::_jmadf->_exceptions.joinIntoString("\n");
+	JMADF::_jmadf->_exceptionLock.exitRead();
+	return str;
+}
+
+void JMADF::clearException()
+{
+	JMADF::_jmadf->_exceptionLock.enterWrite();
+	JMADF::_jmadf->_exceptions.clearQuick();
+	JMADF::_jmadf->_exceptionLock.exitWrite();
 }

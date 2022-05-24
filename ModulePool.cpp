@@ -1,4 +1,5 @@
 #include "ModulePool.h"
+#include "JMADF.h"
 
 ModulePool::ModulePool()
 {
@@ -13,6 +14,7 @@ ModulePool::~ModulePool()
 bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
 {
 	if (!info) {
+		JMADF::raiseException("nullptr!");
 		return false;
 	}
 	
@@ -24,6 +26,7 @@ bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterfac
 	
 	JModule* mod = new(std::nothrow) JModule;
 	if (mod == nullptr) {
+		JMADF::raiseException("Can't alloc memory!");
 		this->listLock.exitWrite();
 		return false;
 	}
@@ -34,6 +37,7 @@ bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterfac
 		this->moduleList.set(info->id, mod);
 	}
 	else {
+		JMADF::raiseException("Can't init module:" + info->id);
 		mod->destory();
 		delete mod;
 	}

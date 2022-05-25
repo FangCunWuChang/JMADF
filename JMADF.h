@@ -3,6 +3,7 @@
 #include "ModuleList.h"
 #include "ModulePool.h"
 #include "libJModule/StaticInterface.h"
+#include "libJModule/JInterface.h"
 
 //Juce模块化应用开发框架
 
@@ -28,6 +29,22 @@ public:
 	static void raiseException(const juce::String& exception);
 	static const juce::String getException();
 	static void clearException();
+
+public:
+	template<typename ...T>
+	static void callInterfaceFromLoader(
+		const juce::String& moduleId, T... args
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return;
+		}
+		pInterface->call<T...>("", moduleId, args...);
+	};
+
+private:
+	static jmadf::JInterface* getInterface(const juce::String& moduleId);
 	
 private:
 	std::unique_ptr<ModuleList> _moduleList;

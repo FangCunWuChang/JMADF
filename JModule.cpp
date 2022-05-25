@@ -53,6 +53,8 @@ bool JModule::init(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* 
 		return false;
 	}
 	
+	this->interfaces = std::make_unique<jmadf::JInterface>();
+
 	return this->moduleClass->init();
 }
 
@@ -69,4 +71,9 @@ void JModule::destory()
 	if(this->library) {
 		this->library->close();
 	}
+}
+
+jmadf::JInterface* JModule::getInterface()
+{
+	return this->interfaces.get();
 }

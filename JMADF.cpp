@@ -24,6 +24,7 @@ void JMADF::init(const juce::String& moduleDir, const juce::String& product)
 	JMADF::_jmadf->_staticInterface->raiseExceptionFunc = &JMADF::raiseException;
 	JMADF::_jmadf->_staticInterface->getExceptionFunc = &JMADF::getException;
 	JMADF::_jmadf->_staticInterface->clearExceptionFunc = &JMADF::clearException;
+	JMADF::_jmadf->_staticInterface->getInterfaceFunc = &JMADF::getInterface;
 	JMADF::refreshModule();
 }
 
@@ -101,4 +102,13 @@ void JMADF::clearException()
 	JMADF::_jmadf->_exceptionLock.enterWrite();
 	JMADF::_jmadf->_exceptions.clearQuick();
 	JMADF::_jmadf->_exceptionLock.exitWrite();
+}
+
+jmadf::JInterface* JMADF::getInterface(const juce::String& moduleId)
+{
+	if (moduleId.isEmpty())
+	{
+		return nullptr;
+	}
+	return JMADF::_jmadf->_modulePool->getInterface(moduleId);
 }

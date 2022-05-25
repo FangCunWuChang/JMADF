@@ -20,6 +20,7 @@ bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterfac
 	
 	this->listLock.enterWrite();
 	if (this->moduleList.contains(info->id)) {
+		this->moduleList[info->id]->count++;
 		this->listLock.exitWrite();
 		return true;
 	}
@@ -56,10 +57,14 @@ void ModulePool::unload(const juce::String& moduleId)
 	}
 	
 	JModule* mod = this->moduleList[moduleId];
-	this->moduleList.remove(moduleId);
-	
-	mod->destory();
-	delete mod;
+	if (!mod->count) {
+		this->moduleList.remove(moduleId);
+		mod->destory();
+		delete mod;
+	}
+	else {
+		mod->count--;
+	}
 	
 	this->listLock.exitWrite();
 }
@@ -81,4 +86,12 @@ void ModulePool::closeAll()
 	}
 	this->moduleList.clear();
 	this->listLock.exitWrite();
+}
+
+jmadf::JInterface* ModulePool::getInterface(const juce::String& moduleId)
+{
+	if (!this->moduleList.contains(moduleId)) {
+		return nullptr;
+	}
+	return this->moduleList[moduleId]->getInterface();
 }

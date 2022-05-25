@@ -3,6 +3,7 @@
 #include "JModule.h"
 #include "libJModule/ModuleInfo.h"
 #include "libJModule/StaticInterface.h"
+#include "libJModule/JInterface.h"
 
 //模块池，用于储存各加载后的模块
 
@@ -16,6 +17,9 @@ public:
 	void unload(const juce::String& moduleId);
 	bool isLoaded(const juce::String& moduleId);
 	void closeAll();
+
+public:
+	jmadf::JInterface* getInterface(const juce::String& moduleId);
 	
 private:
 	juce::HashMap<juce::String, JModule*> moduleList;

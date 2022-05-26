@@ -32,13 +32,13 @@ bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterfac
 		return false;
 	}
 	
+	this->moduleList.set(info->id, mod);
+	
 	bool result = mod->init(info, staticInterface);
 	
-	if (result) {
-		this->moduleList.set(info->id, mod);
-	}
-	else {
+	if (!result) {
 		JMADF::raiseException("Can't init module:" + info->id);
+		this->moduleList.remove(info->id);
 		mod->destory();
 		delete mod;
 	}

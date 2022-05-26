@@ -97,3 +97,16 @@ const juce::StringArray ModuleList::getList()
 	this->listLock.exitRead();
 	return array;
 }
+
+const juce::StringArray ModuleList::getListByGroup(const juce::String& groupName)
+{
+	juce::StringArray array;
+	this->listLock.enterRead();
+	for (auto m : this->moduleList) {
+		if (m.group == groupName) {
+			array.add(m.id);
+		}
+	}
+	this->listLock.exitRead();
+	return array;
+}

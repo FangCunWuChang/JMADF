@@ -25,6 +25,9 @@ void JMADF::init(const juce::String& moduleDir, const juce::String& product)
 	JMADF::_jmadf->_staticInterface->getExceptionFunc = &JMADF::getException;
 	JMADF::_jmadf->_staticInterface->clearExceptionFunc = &JMADF::clearException;
 	JMADF::_jmadf->_staticInterface->getInterfaceFunc = &JMADF::getInterface;
+	JMADF::_jmadf->_staticInterface->getAllFunc = &JMADF::getAll;
+	JMADF::_jmadf->_staticInterface->getAllInGroupFunc = &JMADF::getAllInGroup;
+	JMADF::_jmadf->_staticInterface->findFunc = &JMADF::find;
 	JMADF::refreshModule();
 }
 
@@ -78,6 +81,29 @@ bool JMADF::isExists(const juce::String& moduleId)
 	if (moduleId.isEmpty())
 	{
 		return false;
+	}
+	return JMADF::_jmadf->_moduleList->exists(moduleId);
+}
+
+const juce::StringArray JMADF::getAll()
+{
+	return JMADF::_jmadf->_moduleList->getList();
+}
+
+const juce::StringArray JMADF::getAllInGroup(const juce::String& groupName)
+{
+	if (groupName.isEmpty())
+	{
+		return juce::StringArray();
+	}
+	return JMADF::_jmadf->_moduleList->getListByGroup(groupName);
+}
+
+const jmadf::ModuleInfo* JMADF::find(const juce::String& moduleId)
+{
+	if (moduleId.isEmpty())
+	{
+		return nullptr;
 	}
 	return JMADF::_jmadf->_moduleList->find(moduleId);
 }

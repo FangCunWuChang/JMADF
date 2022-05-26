@@ -4,6 +4,7 @@
 #include "ModulePool.h"
 #include "libJModule/StaticInterface.h"
 #include "libJModule/JInterface.h"
+#include "libJModule/ModuleInfo.h"
 
 //Juce模块化应用开发框架
 
@@ -25,6 +26,11 @@ public:
 
 	static bool isLoaded(const juce::String& moduleId);
 	static bool isExists(const juce::String& moduleId);
+
+	static const juce::StringArray getAll();
+	static const juce::StringArray getAllInGroup(const juce::String& groupName);
+	
+	static const jmadf::ModuleInfo* find(const juce::String& moduleId);
 	
 	static void raiseException(const juce::String& exception);
 	static const juce::String getException();
@@ -33,14 +39,27 @@ public:
 public:
 	template<typename ...T>
 	static void callInterfaceFromLoader(
-		const juce::String& moduleId, T... args
+		const juce::String& moduleId, const juce::String& key, T... args
 	)
 	{
 		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
 		if (!pInterface) {
 			return;
 		}
-		pInterface->call<T...>("", moduleId, args...);
+		pInterface->call<T...>("", key, args...);
+	};
+
+	template<typename ...T>
+	requires jmadf::IsVoid<T...>
+	static void callInterfaceFromLoader(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return;
+		}
+		pInterface->call<T...>("", key);
 	};
 
 private:

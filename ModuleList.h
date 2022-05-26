@@ -15,6 +15,7 @@ public:
 	bool exists(const juce::String& moduleId);
 	const jmadf::ModuleInfo* find(const juce::String& moduleId);
 	const juce::StringArray getList();
+	const juce::StringArray getListByGroup(const juce::String& groupName);
 	
 private:
 	juce::HashMap<juce::String, jmadf::ModuleInfo> moduleList;

@@ -1,1 +1,4 @@
 
+[submodule "libJModule"]
+	path = libJModule
+	url = https://gitlab.infinitysvs.tech/WuChang/libJModule.git

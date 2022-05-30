@@ -18,6 +18,8 @@ public:
 	bool isLoaded(const juce::String& moduleId);
 	void closeAll();
 
+	bool canRefresh();
+
 public:
 	jmadf::JInterface* getInterface(const juce::String& moduleId);
 	

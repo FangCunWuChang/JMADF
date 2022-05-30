@@ -88,6 +88,11 @@ void ModulePool::closeAll()
 	this->listLock.exitWrite();
 }
 
+bool ModulePool::canRefresh()
+{
+	return !this->moduleList.size();
+}
+
 jmadf::JInterface* ModulePool::getInterface(const juce::String& moduleId)
 {
 	if (!this->moduleList.contains(moduleId)) {

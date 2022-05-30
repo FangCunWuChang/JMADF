@@ -39,7 +39,9 @@ void JMADF::destroy()
 
 void JMADF::refreshModule()
 {
-	JMADF::_jmadf->_modulePool->closeAll();
+	if (!JMADF::_jmadf->_modulePool->canRefresh()) {
+		return;
+	}
 	JMADF::_jmadf->_moduleList->refresh(JMADF::_jmadf->moduleDir, JMADF::_jmadf->product);
 }
 

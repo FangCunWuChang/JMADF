@@ -16,7 +16,6 @@ public:
 	bool load(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface);
 	void unload(const juce::String& moduleId);
 	bool isLoaded(const juce::String& moduleId);
-	void closeAll();
 
 	bool canRefresh();
 

@@ -8,7 +8,7 @@ ModulePool::ModulePool()
 
 ModulePool::~ModulePool()
 {
-	this->closeAll();
+	
 }
 
 bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
@@ -75,17 +75,6 @@ bool ModulePool::isLoaded(const juce::String& moduleId)
 	bool result = this->moduleList.contains(moduleId);
 	this->listLock.exitRead();
 	return result;
-}
-
-void ModulePool::closeAll()
-{
-	this->listLock.enterWrite();
-	for (auto m : this->moduleList) {
-		m->destory();
-		delete m;
-	}
-	this->moduleList.clear();
-	this->listLock.exitWrite();
 }
 
 bool ModulePool::canRefresh()

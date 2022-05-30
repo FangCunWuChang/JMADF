@@ -5,6 +5,7 @@
 #include "libJModule/StaticInterface.h"
 #include "libJModule/JInterface.h"
 #include "libJModule/ModuleInfo.h"
+#include <stack>
 
 //Juce模块化应用开发框架
 
@@ -21,9 +22,9 @@ public:
 
 	static void refreshModule();
 	
-	static bool load(const juce::String& moduleId);
-	static void unload(const juce::String& moduleId);
-
+	static bool loadFromLoader(const juce::String& moduleId);
+	static void unloadFromLoader(const juce::String& moduleId);
+	
 	static bool isLoaded(const juce::String& moduleId);
 	static bool isExists(const juce::String& moduleId);
 
@@ -64,6 +65,9 @@ public:
 
 private:
 	static jmadf::JInterface* getInterface(const juce::String& moduleId);
+
+	static bool load(const juce::String& moduleId);
+	static void unload(const juce::String& moduleId);
 	
 private:
 	std::unique_ptr<ModuleList> _moduleList;
@@ -74,6 +78,9 @@ private:
 
 	juce::String moduleDir;
 	juce::String product;
+	
+	std::stack<juce::String> LLList;
+	juce::SpinLock llListLock;
 private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JMADF)
 };

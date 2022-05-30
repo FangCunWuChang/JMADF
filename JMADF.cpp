@@ -33,7 +33,12 @@ void JMADF::init(const juce::String& moduleDir, const juce::String& product)
 
 void JMADF::destroy()
 {
-	JMADF::_jmadf->_modulePool->closeAll();
+	JMADF::_jmadf->llListLock.enter();
+	while (!JMADF::_jmadf->LLList.empty()) {
+		JMADF::unload(JMADF::_jmadf->LLList.top());
+		JMADF::_jmadf->LLList.pop();
+	}
+	JMADF::_jmadf->llListLock.exit();
 	JMADF::_jmadf = nullptr;
 }
 
@@ -139,4 +144,23 @@ jmadf::JInterface* JMADF::getInterface(const juce::String& moduleId)
 		return nullptr;
 	}
 	return JMADF::_jmadf->_modulePool->getInterface(moduleId);
+}
+
+bool JMADF::loadFromLoader(const juce::String& moduleId)
+{
+	juce::GenericScopedLock<juce::SpinLock> locker(JMADF::_jmadf->llListLock);
+	if (!JMADF::load(moduleId)) {
+		return false;
+	}
+	JMADF::_jmadf->LLList.push(moduleId);
+	return true;
+}
+
+void JMADF::unloadFromLoader(const juce::String& moduleId)
+{
+	juce::GenericScopedLock<juce::SpinLock> locker(JMADF::_jmadf->llListLock);
+	if (JMADF::_jmadf->LLList.top() == moduleId) {
+		JMADF::unload(moduleId);
+		JMADF::_jmadf->LLList.pop();
+	}
 }

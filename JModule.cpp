@@ -10,9 +10,21 @@ bool JModule::init(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* 
 	}
 	this->info = info;
 
+	juce::String entryExtension;
+	
+#if JUCE_WINDOWS
+	entryExtension = ".dll";
+#endif
+#if JUCE_LINUX || JUCE_ANDROID
+	entryExtension = ".so";
+#endif
+#if JUCE_MAC || JUCE_IOS
+	entryExtension = ".dylib";
+#endif
+	
 	this->library = std::make_unique<juce::DynamicLibrary>();
-	if (!this->library->open(info->path + "/" + info->entry)) {
-		JMADF::raiseException("Can't open library:" + info->path + "/" + info->entry);
+	if (!this->library->open(info->path + "/" + info->entry + entryExtension)) {
+		JMADF::raiseException("Can't open library:" + info->path + "/" + info->entry + entryExtension);
 		return false;
 	}
 	

@@ -38,32 +38,6 @@ public:
 	static void clearException();
 
 public:
-	template<typename ...T>
-	static void callInterfaceFromLoader(
-		const juce::String& moduleId, const juce::String& key, T... args
-	)
-	{
-		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
-		if (!pInterface) {
-			return;
-		}
-		pInterface->call<T...>("", key, args...);
-	};
-
-	template<typename ...T>
-	requires jmadf::IsVoid<T...>
-	static void callInterfaceFromLoader(
-		const juce::String& moduleId, const juce::String& key
-	)
-	{
-		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
-		if (!pInterface) {
-			return;
-		}
-		pInterface->call<T...>("", key);
-	};
-
-private:
 	static jmadf::JInterface* getInterface(const juce::String& moduleId);
 
 	static bool load(const juce::String& moduleId);
@@ -83,4 +57,42 @@ private:
 	juce::SpinLock llListLock;
 private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JMADF)
+};
+
+template<typename ...T>
+class InterfaceDao final
+{
+	InterfaceDao() = delete;
+	~InterfaceDao() = delete;
+
+public:
+	static void callFromLoader(
+		const juce::String& moduleId, const juce::String& key, T... args
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return;
+		}
+		jmadf::JInterfaceDao<T...>::call(pInterface, "", key, args...);
+	};
+};
+
+template<>
+class InterfaceDao<void> final
+{
+	InterfaceDao() = delete;
+	~InterfaceDao() = delete;
+
+public:
+	static void callFromLoader(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return;
+		}
+		jmadf::JInterfaceDao<void>::call(pInterface, "", key);
+	};
 };

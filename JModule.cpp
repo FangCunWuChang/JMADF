@@ -65,7 +65,7 @@ bool JModule::init(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* 
 		return false;
 	}
 	
-	this->interfaces = std::make_unique<jmadf::JInterface>();
+	this->interfaces = new jmadf::JInterface();
 
 	return this->moduleClass->init();
 }
@@ -74,6 +74,8 @@ void JModule::destory()
 {
 	if (this->moduleClass) {
 		this->moduleClass->destory();
+		this->moduleClass->destoryInterfaces(this->interfaces);
+		this->interfaces = nullptr;//将接口释放延伸至模块中避免模块间内存权限问题
 		this->moduleClass->destoryLoader();
 		this->moduleClass->destoryInfo();
 	}
@@ -87,5 +89,5 @@ void JModule::destory()
 
 jmadf::JInterface* JModule::getInterface()
 {
-	return this->interfaces.get();
+	return this->interfaces;
 }

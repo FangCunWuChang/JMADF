@@ -26,7 +26,7 @@ private:
 	std::function<void(const jmadf::JModuleBase*)> destoryInstanceFunc;
 	const jmadf::ModuleInfo* info = nullptr;
 
-	std::unique_ptr<jmadf::JInterface> interfaces;
+	jmadf::JInterface* interfaces = nullptr;
 
 	friend class ModulePool;
 	uint64_t count = 0;

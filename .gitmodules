@@ -2,3 +2,4 @@
 [submodule "libJModule"]
 	path = libJModule
 	url = https://github.com/FangCunWuChang/libJModule.git
+	branch = develop

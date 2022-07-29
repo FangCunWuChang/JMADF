@@ -2,7 +2,7 @@
 #include <JuceHeader.h>
 #include "libJModule/ModuleInfo.h"
 
-//ģ����Ϣ�б������ڱ���ģ��Ŀ¼�д��ڵ�ģ����Ϣ
+//模块信息列表，用于保存模块目录中存在的模块信息
 
 class ModuleList final
 {

@@ -5,7 +5,7 @@
 #include "libJModule/StaticInterface.h"
 #include "libJModule/JInterface.h"
 
-//Ä£¿é³Ø£¬ÓÃÓÚ´¢´æ¸÷¼ÓÔØºóµÄÄ£¿é
+//æ¨¡å—æ± ï¼Œç”¨äºå‚¨å­˜å„åŠ è½½åçš„æ¨¡å—
 
 class ModulePool final
 {
@@ -13,8 +13,8 @@ public:
 	ModulePool();
 	~ModulePool();
 
-	bool load(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface);
-	void unload(const juce::String& moduleId);
+	bool load(const juce::String& loader, const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface);
+	void unload(const juce::String& loader, const juce::String& moduleId);
 	bool isLoaded(const juce::String& moduleId);
 
 	bool canRefresh();

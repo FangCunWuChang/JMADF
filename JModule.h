@@ -5,7 +5,7 @@
 #include "libJModule/StaticInterface.h"
 #include "libJModule/JInterface.h"
 
-//Ä£¿é£¬ÓÃÓÚ±£´æÒÑ¼ÓÔØµÄÄ£¿é¾ä±ú
+//æ¨¡å—ï¼Œç”¨äºä¿å­˜å·²åŠ è½½çš„æ¨¡å—å¥æŸ„
 class JModule final
 {
 public:
@@ -30,6 +30,9 @@ private:
 
 	friend class ModulePool;
 	uint64_t count = 0;
+
+	std::list<juce::String> LLList;
+	juce::SpinLock llListLock;
 	
 	JUCE_LEAK_DETECTOR(JModule)
 };

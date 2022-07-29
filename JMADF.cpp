@@ -17,8 +17,8 @@ void JMADF::init(const juce::String& moduleDir, const juce::String& product)
 	JMADF::_jmadf = std::make_unique<JMADF>();
 	JMADF::_jmadf->moduleDir = moduleDir;
 	JMADF::_jmadf->product = product;
-	JMADF::_jmadf->_staticInterface->loadFunc = &JMADF::load;
-	JMADF::_jmadf->_staticInterface->unloadFunc = &JMADF::unload;
+	JMADF::_jmadf->_staticInterface->loadFunc = &JMADF::loadInside;
+	JMADF::_jmadf->_staticInterface->unloadFunc = &JMADF::unloadInside;
 	JMADF::_jmadf->_staticInterface->isExistsFunc = &JMADF::isExists;
 	JMADF::_jmadf->_staticInterface->isLoadedFunc = &JMADF::isLoaded;
 	JMADF::_jmadf->_staticInterface->raiseExceptionFunc = &JMADF::raiseException;
@@ -62,7 +62,28 @@ bool JMADF::load(const juce::String& moduleId)
 		JMADF::raiseException("Module " + moduleId + " isn't exists!");
 		return false;
 	}
-	return JMADF::_jmadf->_modulePool->load(info, JMADF::_jmadf->_staticInterface.get());
+	return JMADF::_jmadf->_modulePool->load(juce::String(), info, JMADF::_jmadf->_staticInterface.get());
+}
+
+bool JMADF::loadInside(const juce::String& loader, const juce::String& moduleId)
+{
+	if (loader.isEmpty())
+	{
+		jassertfalse;
+		JMADF::raiseException("Loader id can't be empty!");
+		return false;
+	}
+	if (moduleId.isEmpty())
+	{
+		JMADF::raiseException("Module id can't be empty!");
+		return false;
+	}
+	const jmadf::ModuleInfo* info = JMADF::_jmadf->_moduleList->find(moduleId);
+	if (!info) {
+		JMADF::raiseException("Module " + moduleId + " isn't exists!");
+		return false;
+	}
+	return JMADF::_jmadf->_modulePool->load(loader, info, JMADF::_jmadf->_staticInterface.get());
 }
 
 void JMADF::unload(const juce::String& moduleId)
@@ -71,7 +92,21 @@ void JMADF::unload(const juce::String& moduleId)
 	{
 		return;
 	}
-	JMADF::_jmadf->_modulePool->unload(moduleId);
+	JMADF::_jmadf->_modulePool->unload(juce::String(), moduleId);
+}
+
+void JMADF::unloadInside(const juce::String& loader, const juce::String& moduleId)
+{
+	if (loader.isEmpty())
+	{
+		jassertfalse;
+		return;
+	}
+	if (moduleId.isEmpty())
+	{
+		return;
+	}
+	JMADF::_jmadf->_modulePool->unload(loader, moduleId);
 }
 
 bool JMADF::isLoaded(const juce::String& moduleId)

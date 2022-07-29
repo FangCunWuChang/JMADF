@@ -41,7 +41,9 @@ public:
 	static jmadf::JInterface* getInterface(const juce::String& moduleId);
 
 	static bool load(const juce::String& moduleId);
+	static bool loadInside(const juce::String& loader, const juce::String& moduleId);
 	static void unload(const juce::String& moduleId);
+	static void unloadInside(const juce::String& loader, const juce::String& moduleId);
 	
 private:
 	std::unique_ptr<ModuleList> _moduleList;

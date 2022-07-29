@@ -11,48 +11,53 @@ ModulePool::~ModulePool()
 	
 }
 
-bool ModulePool::load(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
+bool ModulePool::load(const juce::String& loader, const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface)
 {
 	if (!info) {
 		JMADF::raiseException("nullptr!");
 		return false;
 	}
 	
-	this->listLock.enterWrite();
+	juce::ScopedWriteLock locker(this->listLock);
 	if (this->moduleList.contains(info->id)) {
+		if (!loader.isEmpty()) {
+			auto* loaderPtr = this->moduleList[loader];
+			juce::GenericScopedLock<juce::SpinLock> locker(loaderPtr->llListLock);
+			loaderPtr->LLList.push_front(info->id);
+		}
 		this->moduleList[info->id]->count++;
-		this->listLock.exitWrite();
 		return true;
 	}
 	
 	JModule* mod = new(std::nothrow) JModule;
 	if (mod == nullptr) {
 		JMADF::raiseException("Can't alloc memory!");
-		this->listLock.exitWrite();
 		return false;
 	}
 	
 	this->moduleList.set(info->id, mod);
 	
-	bool result = mod->init(info, staticInterface);
-	
-	if (!result) {
+	if (!mod->init(info, staticInterface)) {
 		JMADF::raiseException("Can't init module:" + info->id);
 		this->moduleList.remove(info->id);
 		mod->destory();
 		delete mod;
+		return false;
 	}
 	
-	this->listLock.exitWrite();
+	if (!loader.isEmpty()) {
+		auto* loaderPtr = this->moduleList[loader];
+		juce::GenericScopedLock<juce::SpinLock> locker(loaderPtr->llListLock);
+		loaderPtr->LLList.push_front(info->id);
+	}
 	
-	return result;
+	return true;
 }
 
-void ModulePool::unload(const juce::String& moduleId)
+void ModulePool::unload(const juce::String& loader, const juce::String& moduleId)
 {
-	this->listLock.enterWrite();
+	juce::ScopedWriteLock locker(this->listLock);
 	if (!this->moduleList.contains(moduleId)) {
-		this->listLock.exitWrite();
 		return;
 	}
 	
@@ -65,8 +70,17 @@ void ModulePool::unload(const juce::String& moduleId)
 	else {
 		mod->count--;
 	}
-	
-	this->listLock.exitWrite();
+
+	if (!loader.isEmpty()) {
+		auto* loaderPtr = this->moduleList[loader];
+		juce::GenericScopedLock<juce::SpinLock> locker(
+			loaderPtr->llListLock);
+		for (auto it = loaderPtr->LLList.begin(); it != loaderPtr->LLList.end(); it++) {
+			if (*it == moduleId) {
+				loaderPtr->LLList.erase(it);
+			}
+		}
+	}
 }
 
 bool ModulePool::isLoaded(const juce::String& moduleId)

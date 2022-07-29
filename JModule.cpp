@@ -73,6 +73,11 @@ bool JModule::init(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* 
 void JModule::destory()
 {
 	if (this->moduleClass) {
+		juce::GenericScopedLock<juce::SpinLock> locker(this->llListLock);
+		for (auto& i : this->LLList) {
+			JMADF::unload(i);
+		}
+
 		this->moduleClass->destory();
 		this->moduleClass->destoryInterfaces(this->interfaces);
 		this->interfaces = nullptr;//将接口释放延伸至模块中避免模块间内存权限问题

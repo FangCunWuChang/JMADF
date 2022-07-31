@@ -12,7 +12,7 @@ ModuleList::~ModuleList()
 
 void ModuleList::refresh(const juce::String& moduleDir, const juce::String& product)
 {
-	this->listLock.enterWrite();
+	juce::ScopedWriteLock locker(this->listLock);
 	this->moduleList.clear();
 	
 	juce::FileSearchPath moduleDirObject(moduleDir);
@@ -26,7 +26,7 @@ void ModuleList::refresh(const juce::String& moduleDir, const juce::String& prod
 			if (info.isObject()) {
 				const juce::String& id = info["id"].toString();
 				const juce::String& version = info["version"].toString();
-				const juce::String& group = info["group"].toString();
+				//const juce::String& group = info["group"].toString();
 				const juce::String& productId = info["productId"].toString();
 				const juce::String& entry = info["entry"].toString();
 				const juce::String& description = info["description"].toString();
@@ -48,7 +48,16 @@ void ModuleList::refresh(const juce::String& moduleDir, const juce::String& prod
 				jmadf::ModuleInfo& moduleInfo = this->moduleList.getReference(moduleName);
 				moduleInfo.id = id;
 				moduleInfo.version = version;
-				moduleInfo.group = group;
+				//moduleInfo.group = group;
+				if (info["group"].isString()) {
+					moduleInfo.group.add(info["group"].toString());
+				}
+				else if (info["group"].isArray()) {
+					juce::Array<juce::var>* groupArray = info["group"].getArray();
+					for (auto& g : *groupArray) {
+						moduleInfo.group.add(g.toString());
+					}
+				}
 				moduleInfo.productId = productId;
 				moduleInfo.path = modulePath;
 				moduleInfo.entry = entry;
@@ -58,55 +67,49 @@ void ModuleList::refresh(const juce::String& moduleDir, const juce::String& prod
 			}
 		}
 	}
-	this->listLock.exitWrite();
 }
 
 bool ModuleList::exists(const juce::String& moduleId)
 {
-	this->listLock.enterRead();
-	bool result = this->moduleList.contains(moduleId);
-	this->listLock.exitRead();
-	return result;
+	juce::ScopedReadLock locker(this->listLock);
+	return this->moduleList.contains(moduleId);
 }
 
 void ModuleList::clear()
 {
-	this->listLock.enterWrite();
+	juce::ScopedWriteLock locker(this->listLock);
 	this->moduleList.clear();
-	this->listLock.exitWrite();
 }
 
 const jmadf::ModuleInfo* ModuleList::find(const juce::String& moduleId)
 {
-	const jmadf::ModuleInfo* ptr = nullptr;
-	this->listLock.enterRead();
+	juce::ScopedReadLock locker(this->listLock);
 	if (this->moduleList.contains(moduleId)) {
-		ptr = &this->moduleList.getReference(moduleId);
+		return &this->moduleList.getReference(moduleId);
 	}
-	this->listLock.exitRead();
-	return ptr;
+	return nullptr;
 }
 
 const juce::StringArray ModuleList::getList()
 {
 	juce::StringArray array;
-	this->listLock.enterRead();
+	juce::ScopedReadLock locker(this->listLock);
 	for (auto m : this->moduleList) {
 		array.add(m.id);
 	}
-	this->listLock.exitRead();
 	return array;
 }
 
 const juce::StringArray ModuleList::getListByGroup(const juce::String& groupName)
 {
 	juce::StringArray array;
-	this->listLock.enterRead();
+	juce::ScopedReadLock locker(this->listLock);
 	for (auto m : this->moduleList) {
-		if (m.group == groupName) {
-			array.add(m.id);
+		for (auto& g : m.group) {
+			if (g == groupName) {
+				array.add(m.id);
+			}
 		}
 	}
-	this->listLock.exitRead();
 	return array;
 }

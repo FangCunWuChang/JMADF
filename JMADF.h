@@ -78,6 +78,17 @@ public:
 		}
 		jmadf::JInterfaceDao<T...>::call(pInterface, "", key, args...);
 	};
+
+	static const std::function<void(T...)> getFromLoader(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return [](T...) {};
+		}
+		return jmadf::JInterfaceDao<T...>::get(pInterface, "", key);
+	};
 };
 
 template<>
@@ -97,4 +108,15 @@ public:
 		}
 		jmadf::JInterfaceDao<void>::call(pInterface, "", key);
 	};
+
+	static const std::function<void(void)> getFromLoader(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return [] {};
+		}
+		return jmadf::JInterfaceDao<void>::get(pInterface, "", key);
+	}
 };

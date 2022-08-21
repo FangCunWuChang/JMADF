@@ -1,4 +1,4 @@
-#include "JModule.h"
+ï»¿#include "JModule.h"
 #include "JMADF.h"
 #include "libJModule/Utils.h"
 
@@ -80,7 +80,7 @@ void JModule::destory()
 
 		this->moduleClass->destory();
 		this->moduleClass->destoryInterfaces(this->interfaces);
-		this->interfaces = nullptr;//½«½Ó¿ÚÊÍ·ÅÑÓÉìÖÁÄ£¿éÖÐ±ÜÃâÄ£¿é¼äÄÚ´æÈ¨ÏÞÎÊÌâ
+		this->interfaces = nullptr;//å°†æŽ¥å£é‡Šæ”¾å»¶ä¼¸è‡³æ¨¡å—ä¸­é¿å…æ¨¡å—é—´å†…å­˜æƒé™é—®é¢˜
 		this->moduleClass->destoryLoader();
 		this->moduleClass->destoryInfo();
 	}

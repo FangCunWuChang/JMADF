@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <JuceHeader.h>
 #include "ModuleList.h"
 #include "ModulePool.h"
@@ -7,7 +7,7 @@
 #include "libJModule/ModuleInfo.h"
 #include <stack>
 
-//JuceÄ£¿é»¯Ó¦ÓÃ¿ª·¢¿ò¼Ü
+//Juceæ¨¡å—åŒ–åº”ç”¨å¼€å‘æ¡†æ¶
 
 class JMADF final
 {

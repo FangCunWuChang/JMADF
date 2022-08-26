@@ -89,6 +89,16 @@ public:
 		}
 		return jmadf::JInterfaceDao<T...>::get(pInterface, "", key);
 	};
+	static bool checkFromLoader(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return false;
+		}
+		return jmadf::JInterfaceDao<T...>::check(pInterface, key);
+	};
 };
 
 template<>
@@ -119,4 +129,14 @@ public:
 		}
 		return jmadf::JInterfaceDao<void>::get(pInterface, "", key);
 	}
+	static bool checkFromLoader(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		jmadf::JInterface* pInterface = JMADF::getInterface(moduleId);
+		if (!pInterface) {
+			return false;
+		}
+		return jmadf::JInterfaceDao<void>::check(pInterface, key);
+	};
 };

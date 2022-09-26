@@ -76,7 +76,7 @@ public:
 		if (!pInterface) {
 			return;
 		}
-		jmadf::JInterfaceDao<T...>::call(pInterface, "", key, args...);
+		jmadf::JInterfaceDao<T...>::call(pInterface, "", key, std::forward<T>(args)...);
 	};
 
 	static const std::function<void(T...)> getFromLoader(

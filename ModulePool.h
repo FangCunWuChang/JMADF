@@ -17,14 +17,20 @@ public:
 	void unload(const juce::String& loader, const juce::String& moduleId);
 	bool isLoaded(const juce::String& moduleId);
 
+	void setLoadHook(const juce::String& moduleId, const jmadf::HookFunction& hook);
+	void setUnloadHook(const juce::String& moduleId, const jmadf::HookFunction& hook);
+	void setLoadCallback(const juce::String& moduleId, const jmadf::HookFunction& hook);
+	void setUnloadCallback(const juce::String& moduleId, const jmadf::HookFunction& hook);
+
 	bool canRefresh();
 
 public:
 	jmadf::JInterface* getInterface(const juce::String& moduleId);
 	
 private:
-	juce::HashMap<juce::String, JModule*> moduleList;
-	juce::ReadWriteLock listLock;
+	std::map<juce::String, JModule*> moduleList;
+	std::map<juce::String, jmadf::HookFunction> loadHookList, unloadHookList, loadCallbackList, unloadCallbackList;
+	juce::ReadWriteLock listLock, hookLock;
 	
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ModulePool)
 };

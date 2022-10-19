@@ -44,6 +44,11 @@ public:
 	static bool loadInside(const juce::String& loader, const juce::String& moduleId);
 	static void unload(const juce::String& moduleId);
 	static void unloadInside(const juce::String& loader, const juce::String& moduleId);
+
+	static void setLoadHook(const juce::String& moduleId, const jmadf::HookFunction& hook);
+	static void setUnloadHook(const juce::String& moduleId, const jmadf::HookFunction& hook);
+	static void setLoadCallback(const juce::String& moduleId, const jmadf::HookFunction& hook);
+	static void setUnloadCallback(const juce::String& moduleId, const jmadf::HookFunction& hook);
 	
 private:
 	std::unique_ptr<ModuleList> _moduleList;

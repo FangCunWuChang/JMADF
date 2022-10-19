@@ -13,7 +13,10 @@ public:
 	~JModule() = default;
 	
 	bool init(const jmadf::ModuleInfo* info, const jmadf::StaticInterface* staticInterface);
-	void destory();
+	void destory(
+		juce::ReadWriteLock* hookLock = nullptr,
+		std::map<juce::String, jmadf::HookFunction>* hooks = nullptr,
+		std::map<juce::String, jmadf::HookFunction>* callbacks = nullptr);
 	
 public:
 	jmadf::JInterface* getInterface();
@@ -32,7 +35,7 @@ private:
 	uint64_t count = 0;
 
 	std::list<juce::String> LLList;
-	juce::SpinLock llListLock;
+	juce::CriticalSection llListLock;
 	
 	JUCE_LEAK_DETECTOR(JModule)
 };

@@ -1,4 +1,4 @@
-#include "JMADF.h"
+﻿#include "JMADF.h"
 
 std::unique_ptr<JMADF> JMADF::_jmadf;
 
@@ -28,6 +28,10 @@ void JMADF::init(const juce::String& moduleDir, const juce::String& product)
 	JMADF::_jmadf->_staticInterface->getAllFunc = &JMADF::getAll;
 	JMADF::_jmadf->_staticInterface->getAllInGroupFunc = &JMADF::getAllInGroup;
 	JMADF::_jmadf->_staticInterface->findFunc = &JMADF::find;
+	JMADF::_jmadf->_staticInterface->setLoadHookFunc = &JMADF::setLoadHook;
+	JMADF::_jmadf->_staticInterface->setUnloadHookFunc = &JMADF::setUnloadHook;
+	JMADF::_jmadf->_staticInterface->setLoadCallbackFunc = &JMADF::setLoadCallback;
+	JMADF::_jmadf->_staticInterface->setUnloadCallbackFunc = &JMADF::setUnloadCallback;
 	JMADF::refreshModule();
 }
 
@@ -107,6 +111,26 @@ void JMADF::unloadInside(const juce::String& loader, const juce::String& moduleI
 		return;
 	}
 	JMADF::_jmadf->_modulePool->unload(loader, moduleId);
+}
+
+void JMADF::setLoadHook(const juce::String& moduleId, const jmadf::HookFunction& hook)
+{
+	JMADF::_jmadf->_modulePool->setLoadHook(moduleId, hook);
+}
+
+void JMADF::setUnloadHook(const juce::String& moduleId, const jmadf::HookFunction& hook)
+{
+	JMADF::_jmadf->_modulePool->setUnloadHook(moduleId, hook);
+}
+
+void JMADF::setLoadCallback(const juce::String& moduleId, const jmadf::HookFunction& hook)
+{
+	JMADF::_jmadf->_modulePool->setLoadCallback(moduleId, hook);
+}
+
+void JMADF::setUnloadCallback(const juce::String& moduleId, const jmadf::HookFunction& hook)
+{
+	JMADF::_jmadf->_modulePool->setUnloadCallback(moduleId, hook);
 }
 
 bool JMADF::isLoaded(const juce::String& moduleId)

@@ -57,8 +57,13 @@ bool ModulePool::load(const juce::String& loader, const jmadf::ModuleInfo* info,
 		//抛异常
 		JMADF::raiseException("Can't init module:" + info->id);
 
-		//从模块列表中移除
-		this->moduleList.erase(info->id);
+		//根据模块调用栈卸载模块
+		{
+			juce::GenericScopedLock<juce::CriticalSection> locker(mod->llListLock);
+			for (auto& i : mod->LLList) {
+				JMADF::unload(i);
+			}
+		}
 
 		//移除钩子
 		{
@@ -69,13 +74,8 @@ bool ModulePool::load(const juce::String& loader, const jmadf::ModuleInfo* info,
 			this->unloadCallbackList.erase(info->id);
 		}
 
-		//根据模块调用栈卸载模块
-		{
-			juce::GenericScopedLock<juce::CriticalSection> locker(mod->llListLock);
-			for (auto& i : mod->LLList) {
-				JMADF::unload(i);
-			}
-		}
+		//从模块列表中移除
+		this->moduleList.erase(info->id);
 
 		//销毁模块
 		mod->destory();
@@ -112,14 +112,19 @@ void ModulePool::unload(const juce::String& loader, const juce::String& moduleId
 	if (!this->moduleList.contains(moduleId)) {
 		return;
 	}
+
+	//如果调用者非主模块，则从调用者调用栈中移除
+	if (!loader.isEmpty()) {
+		auto* loaderPtr = this->moduleList[loader];
+		juce::GenericScopedLock<juce::CriticalSection> locker(
+			loaderPtr->llListLock);
+		loaderPtr->LLList.remove(moduleId);
+	}
 	
 	//获取模块指针
 	JModule* mod = this->moduleList[moduleId];
 	if (mod->count == 0) {
 		//如果引用计数为0（只有一次加载），则卸载模块
-
-		//从列表中移除模块
-		this->moduleList.erase(moduleId);
 
 		//根据模块调用栈卸载模块
 		{
@@ -138,6 +143,9 @@ void ModulePool::unload(const juce::String& loader, const juce::String& moduleId
 			this->unloadCallbackList.erase(moduleId);
 		}
 
+		//从列表中移除模块
+		this->moduleList.erase(moduleId);
+
 		//销毁模块
 		mod->destory(&(this->hookLock), &(this->unloadHookList), &(this->unloadCallbackList));
 		delete mod;
@@ -145,14 +153,6 @@ void ModulePool::unload(const juce::String& loader, const juce::String& moduleId
 	else {
 		//减少引用计数
 		mod->count--;
-	}
-
-	//如果调用者非主模块，则从调用者调用栈中移除
-	if (!loader.isEmpty()) {
-		auto* loaderPtr = this->moduleList[loader];
-		juce::GenericScopedLock<juce::CriticalSection> locker(
-			loaderPtr->llListLock);
-		loaderPtr->LLList.remove(moduleId);
 	}
 }
 
